@@ -14,7 +14,7 @@ import requests
 
 # Инициализация логирования
 logging.basicConfig(level=logging.INFO)
-
+print(f"✅ API_TOKEN успешно загружен: {API_TOKEN[:5]}...") 
 # Инициализация бота и диспетчера
 API_TOKEN = os.getenv('TELEGRAM_TOKEN')
 bot = Bot(token=API_TOKEN)
