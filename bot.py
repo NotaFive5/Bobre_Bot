@@ -5,7 +5,8 @@ from aiogram import Router
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.types import Message
-from aiogram.utils import executor
+import asyncio
+
 from aiogram.dispatcher.filters import Command
 from aiogram.dispatcher import Router
 import logging
@@ -64,6 +65,6 @@ async def send_leaderboard(message: Message):
         await message.answer('Произошла ошибка при загрузке таблицы лидеров.')
 
 # Запуск бота
-if __name__ == '__main__':
-    from aiogram import executor
-    executor.start_polling(dp, skip_updates=True)
+if __name__ == "__main__":
+    asyncio.run(dp.start_polling(bot))
+
