@@ -14,7 +14,7 @@ import requests
 
 # Инициализация логирования
 logging.basicConfig(level=logging.INFO)
-print(f"✅ API_TOKEN успешно загружен: {API_TOKEN[:5]}...") 
+
 # Инициализация бота и диспетчера
 API_TOKEN = os.getenv('TELEGRAM_TOKEN')
 bot = Bot(token=API_TOKEN)
@@ -23,7 +23,7 @@ dp = Dispatcher(bot)
 # URL игры на GitHub Pages
 GAME_URL = "https://notafive5.github.io/BoberCurwa/"
 API_URL = "https://your-server-domain.com/api"
-
+print(f"✅ API_TOKEN успешно загружен: {API_TOKEN[:5]}...") 
 # Обработка команды /start
 @dp.message_handler(commands=['start'])
 async def start_command(message: Message):
