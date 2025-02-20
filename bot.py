@@ -7,8 +7,8 @@ from aiogram import Bot, Dispatcher, types
 from aiogram.types import Message
 import asyncio
 
-from aiogram.dispatcher.filters import Command
-from aiogram.dispatcher import Router
+from aiogram.filters import Command
+
 import logging
 import requests
 
