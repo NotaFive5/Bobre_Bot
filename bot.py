@@ -1,39 +1,47 @@
-
-
 import os
-from aiogram import Router
-
-from aiogram import Bot, Dispatcher, types
-from aiogram.types import Message
-import asyncio
-
-from aiogram.filters import Command
-
 import logging
 import requests
+from aiogram import Bot, Dispatcher
+from aiogram.types import Message
+from aiogram.filters import Command
+from aiogram.utils.keyboard import ReplyKeyboardMarkup, KeyboardButton
+import asyncio
 
 # Инициализация логирования
 logging.basicConfig(level=logging.INFO)
 
 # Инициализация бота и диспетчера
 API_TOKEN = os.getenv('TELEGRAM_TOKEN')
+API_URL = "https://your-server-domain.com/api"
+
+if not API_TOKEN:
+    raise ValueError("❌ TELEGRAM_TOKEN не найден! Убедись, что переменная окружения установлена корректно.")
+
 bot = Bot(token=API_TOKEN)
-dp = Dispatcher(bot)
+dp = Dispatcher()
 
 # URL игры на GitHub Pages
 GAME_URL = "https://notafive5.github.io/BoberCurwa/"
-API_URL = "https://your-server-domain.com/api"
-print(f"✅ API_TOKEN успешно загружен: {API_TOKEN[:5]}...") 
+
 # Обработка команды /start
-@dp.message_handler(commands=['start'])
+@dp.message(Command("start"))
 async def start_command(message: Message):
-    await message.answer(
-        f'Привет! Нажми на ссылку, чтобы играть: [Играть в FLAPPY BOBR]({GAME_URL})',
-        parse_mode="Markdown"
-    )
+    user_id = message.from_user.id
+    username = message.from_user.username or "unknown"
+
+    # Сохранение данных пользователя на сервере
+    try:
+        response = requests.post(f"{API_URL}/save_user", json={"user_id": user_id, "username": username})
+        if response.status_code == 200:
+            await message.answer(f"Привет, {username}! Нажми на ссылку, чтобы играть: [Играть в FLAPPY BOBR]({GAME_URL})", parse_mode="Markdown")
+        else:
+            await message.answer("Не удалось сохранить данные пользователя. Попробуйте позже.")
+    except Exception as e:
+        logging.error(e)
+        await message.answer("Произошла ошибка при сохранении данных пользователя.")
 
 # Обработка команды /score для отправки очков
-@dp.message_handler(commands=['score'])
+@dp.message(Command("score"))
 async def send_score(message: Message):
     user_id = message.from_user.id
     try:
@@ -48,7 +56,7 @@ async def send_score(message: Message):
         await message.answer('Произошла ошибка при получении счёта.')
 
 # Обработка команды /top для отображения таблицы лидеров
-@dp.message_handler(commands=['top'])
+@dp.message(Command("top"))
 async def send_leaderboard(message: Message):
     try:
         response = requests.get(f'{API_URL}/leaderboard')
@@ -65,6 +73,10 @@ async def send_leaderboard(message: Message):
         await message.answer('Произошла ошибка при загрузке таблицы лидеров.')
 
 # Запуск бота
-if __name__ == "__main__":
-    asyncio.run(dp.start_polling(bot))
+async def main():
+    dp.include_router(dp)
+    await bot.delete_webhook(drop_pending_updates=True)
+    await dp.start_polling(bot)
 
+if __name__ == "__main__":
+    asyncio.run(main())
