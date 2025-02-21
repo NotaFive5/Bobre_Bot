@@ -9,7 +9,7 @@ import requests
 logging.basicConfig(level=logging.INFO)
 
 API_TOKEN = os.getenv('TELEGRAM_TOKEN')
-API_URL = "https://your-server-domain.com/api"
+API_URL = "https://servercurwa-production.up.railway.app"
 GAME_URL = "https://notafive5.github.io/BoberCurwa/"
 
 bot = Bot(token=API_TOKEN)
